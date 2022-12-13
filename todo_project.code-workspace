@@ -1,0 +1,17 @@
+{
+	"folders": [
+		{
+			"path": "."
+		},
+		{
+			"path": "../todolist/routes"
+		},
+		{
+			"path": "../todolist/models"
+		},
+		{
+			"path": "../todolist/controller"
+		}
+	],
+	"settings": {}
+}
