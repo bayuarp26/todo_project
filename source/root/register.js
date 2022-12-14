@@ -5,35 +5,107 @@ import {
   TextInput,
   TouchableOpacity,
   Image,
+  ToastAndroid,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import {useNavigation} from '@react-navigation/native';
 
 const Register = () => {  
+    const [email, setEmail] = React.useState('');
+    const [password, setPassword] = React.useState('');
+    const [nama , setNama] = React.useState('');
+
+
+        const [data, setData] = React.useState({
+            email: '',
+            password: '',
+            nama: '',
+            
+        });
+
+        useEffect(() => {
+            getData();
+          return () => { };
+        }, []);
+
+
+            const getData = async () => {
+                try {
+                    let email = await AsyncStorage.getItem('email');
+                    let password = await AsyncStorage.getItem('password');
+                    let nama = await AsyncStorage.getItem('nama');
+                    if (email !== null && password !== null && nama !== null) {
+
+
+                        setEmail(email);
+                        setPassword(password);
+                        setNama(nama);
+                    }
+                } catch (e) {
+                    console.log(e);
+                }
+              ;
+            };
+          const register = async (value) => {
+            console.log('value',value);
+            try {
+              const res = await axios.post('http://192.168.100.10:3200/user',{
+                email: value.email,
+                password: value.password,
+                nama: value.nama,
+              });
+              if (res.data.status == 200 ) {
+                console.log('res',res);
+                ToastAndroid.show('Register Success', ToastAndroid.SHORT);
+              }
+            } catch (error) {
+              console.log(error.message);
+              ToastAndroid.show('Register Failed', ToastAndroid.SHORT);
+            }
+          }
+  
+
   const navigation = useNavigation();
-return (
+  return (
     <View style={styles.container}>
       <Text style={styles.text}>Register</Text>
       <View style={styles.container1}>
         <TextInput
           style={styles.input}
-          placeholder="Username"
+          placeholder="Email"
+          inputPlaceholderTextColor="white"
           placeholderTextColor="white"
+          onChangeText={(email) => setEmail(email)}
+          value={email}
         />
         <TextInput
           style={styles.input}
-          placeholder="Password"
+          placeholder="nama"
+          inputPlaceholderTextColor="white"
           placeholderTextColor="white"
+          onChangeText={(nama) => setNama(nama)}
+          value={nama}
         />
         <TextInput
           style={styles.input}
-          placeholder="Confirm Password"
+          placeholder="Input Password"
+          inputPlaceholderTextColor="white"
           placeholderTextColor="white"
+          onChangeText={(password) => setPassword(password)}
+          value={password}
         />
-        <TouchableOpacity onPress={() => navigation.navigate('loginScreen')}
-        style={styles.button}>
+        <TouchableOpacity 
+        style={styles.button}
+        onPress={async () => {
+          navigation.navigate('loginScreen');
+          if (email == " " || password == " " || nama == " ") {
+            ToastAndroid.show('Please fill all the fields', ToastAndroid.SHORT);
+          } else {
+            register ({ email, password, nama });
+        }
+        }}>
           <Text style={styles.textButton}>Register</Text>
         </TouchableOpacity>
         <Text style={styles.text2}>Already have an account? 
@@ -44,6 +116,8 @@ return (
     </View>
   );
 };
+
+
 
 const styles = StyleSheet.create({
   container: {

@@ -13,6 +13,6 @@ router.put('/user/:id', join.update)
 
 router.delete('/user/:id', join.junk)
 
-router.get('/user/login', join.login_info)
+router.post('/user/login', join.login_info)
 
 module.exports = router

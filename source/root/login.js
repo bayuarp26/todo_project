@@ -5,13 +5,41 @@ import {
   StyleSheet,
   Image,
   TextInput,
-  TouchableOpacity } from 'react-native'
+  TouchableOpacity, 
+  ToastAndroid} from 'react-native'
 import React, { useState } from 'react'
 import { useNavigation } from '@react-navigation/native'
 import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 const login = () => {
   const navigation = useNavigation();
+  const [email, setEmail] = useState('toyo@email.com');
+  const [password, setPassword] = useState('12345');
+
+  const handleLogin = async (value) => {
+    console.log('value',value);
+
+    try {
+      const res = await axios.post('http://192.168.100.10:3200/user/login',{
+        email: value.email,
+        password: value.password,
+        nama : value.nama,
+      });
+      if (res.data.status === 200) {
+        console.log('res', res.users)
+        navigation.navigate('Homepage');
+      await AsyncStorage.setItem('password', value.password);
+      await AsyncStorage.setItem('email', value.email);
+      await AsyncStorage.setItem('nama', res.data.users.nama);
+      }
+    } catch (error) {
+      console.log(error.message);
+      ToastAndroid.show('Login Failed', ToastAndroid.SHORT);
+    }
+  };
+
+  //data input style 
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Login</Text>
@@ -20,14 +48,21 @@ const login = () => {
           style={styles.input}
           placeholder="Username"
           placeholderTextColor="white"
+          onChangeText={(text) => setEmail(text)}
+          value={email}
         />
         <TextInput
           style={styles.input}
           placeholder="Password"
           placeholderTextColor="white"
+          onChangeText={(text) => setPassword(text)}
+          value={password}
         />
-        <TouchableOpacity onPress={() => navigation.navigate('Homepage')}
-        style={styles.button}>
+        <TouchableOpacity 
+        style={styles.button}
+        onPress={async () => {
+          await handleLogin({email, password});
+        }}>
           <Text style={styles.textButton}>Login</Text>
         </TouchableOpacity>
         <Text style={styles.text2}>Don't have an account? 

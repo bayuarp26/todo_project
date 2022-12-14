@@ -1,35 +1,38 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground} from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 
 const myday = () => {
   const navigation = useNavigation();
   return (
+    <ImageBackground source={require('../asset/myday.jpg')} style={{width: '100%', height: '100%'}}>
     <View style={(styles.container)}>
       <Text style={styles.text}>My Day</Text>
       <View style={styles.container1}>
-        <Text style={styles.text}>Task Name</Text>
-        <Text style={styles.text}>Description</Text>
+        <Text style={styles.text1}>Task Name</Text>
+        <Text style={styles.text1}>Description</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Homepage')}
         style={styles.button}>
           <Text style={styles.textButton}>Add Task</Text>
         </TouchableOpacity>
       </View>
     </View>
+    </ImageBackground>
   )
 }
 
 
 const styles = StyleSheet.create({
-  container: {
+   container: {
     flex: 1,
-    backgroundColor: '#000',
     justifyContent: 'center',
     alignItems: 'center',
   },
   text: {
-    color: '#fff',
-    fontSize: 30,
+    flex : 1,
+    top : 20,
+    color: '#FAEBCD',
+    fontSize: 23,
     fontWeight: 'bold',
     marginBottom: 20,
   },
@@ -47,6 +50,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1B2430',
     borderRadius: 10,
     height: 50,
+    bottom: '40%',
     width: '100%',
     justifyContent: 'center',
     alignItems: 'center',
@@ -56,6 +60,19 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
   },
+  icon : {
+    flex : 1,
+    left: 20,
+    top: 20,
+    color : '#fff',
+  },
+  text1 : {
+    bottom : '100%',
+    color : '#FAEBCD',
+    fontSize : 20,
+    fontWeight : 'bold',
+    marginBottom : 20,
+  }
 })
 
 

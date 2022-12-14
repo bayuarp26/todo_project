@@ -93,16 +93,17 @@ junk : async (req, res) => {
 },
 
 login_info : async (req, res) => {
-    const users = await UserModel.findOne()
-    if (users === null) {
-        res.status(400).json({
-            error: "data invalid"
+    const { email, password } = req.body
+    const check = await passwordCheck(email, password)
+    if (check.compare === true) {
+        res.status(200).json({
+            status:200,
+            users: check.userData,
+            metadata: " login successs"
         })
     } else {
-        res.status(200).json({
-            data: users,
-            metadata: "user login successs"
-
+        res.status(400).json({
+            error: "data invalid"
         })
     }
 

@@ -1,10 +1,11 @@
-import { View, Text, TouchableOpacity, StyleSheet, TextInput } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet, TextInput, ImageBackground} from 'react-native'
 import React from 'react'
 import { useNavigation } from '@react-navigation/native'
 
 const addtask = () => {
   const navigation = useNavigation();
   return (
+   <ImageBackground source={require('../asset/addtask.jpg')} style={{width: '100%', height: '100%'}}>
    <View style={(styles.container)}>
       <Text style={styles.text}>Add Task</Text>
       <View style={styles.container1}>
@@ -18,12 +19,23 @@ const addtask = () => {
           placeholder="Description"
           placeholderTextColor="white"
         />
+        <TextInput
+          style={styles.input}
+          placeholder="Parameter"
+          placeholderTextColor="white"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Date"
+          placeholderTextColor="white"
+        />
         <TouchableOpacity onPress={() => navigation.navigate('Homepage')}
         style={styles.button}>
           <Text style={styles.textButton}>Add Task</Text>
         </TouchableOpacity>
       </View>
     </View>
+    </ImageBackground>
   )
 }
 
@@ -31,7 +43,6 @@ const addtask = () => {
     const styles = StyleSheet.create({
       container: {
         flex: 1,
-        backgroundColor: '#000',
         justifyContent: 'center',
         alignItems: 'center',
       },
