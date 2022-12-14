@@ -36,12 +36,12 @@ const [email, setEmail] = useState('')
 
   const navigation = useNavigation();
   return (
-    
+
      <ImageBackground source={require('../asset/background.jpg')} style={{width: '100%', height: '100%'}}>
     <View style={(styles.container)}>
       <Text style={styles.text}>Homepage</Text>
       <View style={styles.container1}>
-        <Text style={styles.text1}>Welcome {(nama)}</Text>
+        <Text style={styles.text1}>Welcome{(data.nama)}</Text>
         <Text style={styles.text1}>Success isn't given it's earned</Text>
         <Text style={styles.text1}>- Michael Jordan</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Addtask')}
