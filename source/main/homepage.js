@@ -1,47 +1,38 @@
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground} from 'react-native'
-import React, { useState, useEffect } from 'react'
+import React, { useEffect } from 'react'
 import { useNavigation } from '@react-navigation/native'
 
 
 const homepage = () => {
-const [nama, setNama] = useState('')
-const [email, setEmail] = useState('')
-
-
-  const [data, setData] = useState ({
-    email : '',
-    nama : '',
-  })
+  const [nama, setNama] = React.useState('');
+  const [email, setEmail] = React.useState('');
+  const [password, setPassword] = React.useState('');
 
   useEffect(() => {
     getData();
-    return () => { };
-  }, []);
-
-  const getData = async () => {
     try {
-      let email = await AsyncStorage.getItem('email');
-      let password = await AsyncStorage.getItem('password');
-      let nama = await AsyncStorage.getItem('nama');
-      if (email !== null && nama !== null) {
+      const email = await AsyncStorage.getItem('email');
+      const password = await AsyncStorage.getItem('password');
+      const nama = await AsyncStorage.getItem('nama');
+      if (email !== null && password !== null && nama !== null) {
         setEmail(email);
+        setPassword(password);
         setNama(nama);
-        setPass(password);
       }
     } catch (e) {
       console.log(e);
     }
-  };
+    return () => { };
+  }, []);
 
+  
 
   const navigation = useNavigation();
   return (
-
      <ImageBackground source={require('../asset/background.jpg')} style={{width: '100%', height: '100%'}}>
     <View style={(styles.container)}>
       <Text style={styles.text}>Homepage</Text>
       <View style={styles.container1}>
-        <Text style={styles.text1}>Welcome{(data.nama)}</Text>
         <Text style={styles.text1}>Success isn't given it's earned</Text>
         <Text style={styles.text1}>- Michael Jordan</Text>
         <TouchableOpacity onPress={() => navigation.navigate('Addtask')}

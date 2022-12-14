@@ -37,8 +37,6 @@ const Register = () => {
                     let password = await AsyncStorage.getItem('password');
                     let nama = await AsyncStorage.getItem('nama');
                     if (email !== null && password !== null && nama !== null) {
-
-
                         setEmail(email);
                         setPassword(password);
                         setNama(nama);
@@ -136,11 +134,13 @@ const styles = StyleSheet.create({
     width: '80%',
   },
   input: {
-    backgroundColor: '#1B2430',
+   backgroundColor: '#1B2430',
     width: '100%',
     height: 50,
     borderRadius: 10,
     marginBottom: 10,
+    paddingHorizontal: 15,
+    color: '#fff',
   },
    button: {
     backgroundColor: '#fff',
