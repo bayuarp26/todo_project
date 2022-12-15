@@ -1,8 +1,53 @@
-import { View, Text, TouchableOpacity, StyleSheet, ImageBackground} from 'react-native'
-import React from 'react'
-import { useNavigation } from '@react-navigation/native'
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  Image,
+  ToastAndroid,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
 
 const Task = () => {
+  const [title, setTitle] = React.useState('');
+  const [description, setDescription] = React.useState('');
+  const [parameter, setParameter] = React.useState('');
+  const [date, setDate] = React.useState('');
+
+
+  useEffect(() => {
+    const getdata = async () => {
+      try {
+        const email = await AsyncStorage.getItem('email');
+        const password = await AsyncStorage.getItem('password');
+        const nama = await AsyncStorage.getItem('nama');
+        if (email !== null && password !== null && nama !== null) {
+          setEmail(email);
+          setPassword(password);
+          setNama(nama);
+        }
+
+      } catch (e) {
+        console.log(e);
+      }
+    };
+    getdata();
+    return () => {};
+  }, []);
+
+  const task = async (value) => {
+    console.log('value', value);
+    try {
+      
+
+
+
+
+
   const navigation = useNavigation();
   return (
     <ImageBackground source={require('../asset/addtask.jpg')} style={{width: '100%', height: '100%'}}>

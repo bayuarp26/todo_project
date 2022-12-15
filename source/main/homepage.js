@@ -4,29 +4,6 @@ import { useNavigation } from '@react-navigation/native'
 
 
 const homepage = () => {
-  const [nama, setNama] = React.useState('');
-  const [email, setEmail] = React.useState('');
-  const [password, setPassword] = React.useState('');
-
-  useEffect(() => {
-    getData();
-    try {
-      const email = await AsyncStorage.getItem('email');
-      const password = await AsyncStorage.getItem('password');
-      const nama = await AsyncStorage.getItem('nama');
-      if (email !== null && password !== null && nama !== null) {
-        setEmail(email);
-        setPassword(password);
-        setNama(nama);
-      }
-    } catch (e) {
-      console.log(e);
-    }
-    return () => { };
-  }, []);
-
-  
-
   const navigation = useNavigation();
   return (
      <ImageBackground source={require('../asset/background.jpg')} style={{width: '100%', height: '100%'}}>

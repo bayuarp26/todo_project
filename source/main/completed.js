@@ -1,6 +1,17 @@
-import { View, Text, TouchableOpacity, StyleSheet, ImageBackground} from 'react-native'
-import React from 'react'
-import { useNavigation } from '@react-navigation/native'
+import {
+  View,
+  Text,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ImageBackground,
+  ToastAndroid,
+} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {useNavigation} from '@react-navigation/native';
+
 
 const completed = () => {
     const [title, setTitle] = React.useState('');
@@ -8,48 +19,6 @@ const completed = () => {
     const [parameter, setParameter] = React.useState('');
     const [date, setDate] = React.useState('');
   
-
-    const clmpt = async (value) => {
-        console.log('value', value);
-        try {
-          const res = await axios.delete('http://192.168.100.10:3200/todo/:id',{
-            title: value.title,
-            description: value.description,
-            parameter: value.parameter,
-            date: value.date,
-          });
-          if (res.data.status == 200) {
-            console.log('res', res);
-            ToastAndroid.show('task completed', ToastAndroid.SHORT);
-          }
-        } catch (e) {
-          console.log(e);
-        }
-      };
-
-        const getData = async () => {
-            try {
-                const title = await AsyncStorage.getItem('title');
-                const description = await AsyncStorage.getItem('description');
-                const parameter = await AsyncStorage.getItem('parameter');
-                const date = await AsyncStorage.getItem('date');
-                if (title !== null && description !== null && parameter !== null && date !== null) {
-                    setTitle(title);
-                    setDescription(description);
-                    setParameter(parameter);
-                    setDate(date);
-                }
-            } catch (e) {
-                console.log(e);
-            }
-        };
-
-        useEffect(() => {
-            getData();
-            return () => { };
-        }, []);
-
-
   return (
     <ImageBackground source={require('../asset/complete2.jpg')} style={{width: '100%', height: '100%'}}>
     <View style={(styles.container)}>

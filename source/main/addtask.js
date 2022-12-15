@@ -41,7 +41,7 @@ const Addtask = () => {
 const addtask = async (value) => {
   console.log('value',value);
   try {
-    const res = await axios.post('http://192.168.100.10:3200/todo',{
+    const res = await axios.post('http://172.20.10.2:3200/todo',{
       title: value.title,
       description: value.description,
       parameter: value.parameter,

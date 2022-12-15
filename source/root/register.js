@@ -49,7 +49,7 @@ const Register = () => {
           const register = async (value) => {
             console.log('value',value);
             try {
-              const res = await axios.post('http://192.168.100.10:3200/user',{
+              const res = await axios.post('http://172.20.10.2:3200/user',{
                 email: value.email,
                 password: value.password,
                 nama: value.nama,
