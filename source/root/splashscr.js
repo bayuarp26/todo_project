@@ -10,7 +10,7 @@ import Logo from '../asset/main_logo.png'
 //main source
 const splashscr = ({navigation}) => {
     setTimeout(() => {
-        navigation.replace('loginScreen')
+        navigation.replace('login')
     }, 3000);
 
 return (

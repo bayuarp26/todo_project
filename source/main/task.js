@@ -1,122 +1,197 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  Image,
-  ToastAndroid,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import axios from 'axios';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useNavigation} from '@react-navigation/native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, RefreshControl ,ToastAndroid} from 'react-native'
+import React, { useState, useEffect } from 'react'
 
-const Task = () => {
-  const [title, setTitle] = React.useState('');
-  const [description, setDescription] = React.useState('');
-  const [parameter, setParameter] = React.useState('');
-  const [date, setDate] = React.useState('');
+import { useNavigation } from '@react-navigation/native'
+import Icon from 'react-native-vector-icons/MaterialCommunityIcons'
 
+import axios from 'axios'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Checkbox } from 'react-native-paper'
 
-  useEffect(() => {
-    const getdata = async () => {
-      try {
-        const email = await AsyncStorage.getItem('email');
-        const password = await AsyncStorage.getItem('password');
-        const nama = await AsyncStorage.getItem('nama');
-        if (email !== null && password !== null && nama !== null) {
-          setEmail(email);
-          setPassword(password);
-          setNama(nama);
-        }
+const Todo = () => {
+  const navigation = useNavigation()
+  const [data, setData] = useState([])
 
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    getdata();
-    return () => {};
+  const wait = (timeout) => {
+    return new Promise(resolve => setTimeout(resolve, timeout));
+  }
+
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    wait(2000).then(() => setRefreshing(false));
   }, []);
 
-  const task = async (value) => {
-    console.log('value', value);
+  const [datax, setDatax] = useState({
+    id: '',
+    username: '',
+  })
+
+  useEffect(() => {
+    getData()
+    getList()
+    return () => { }
+  }, [])
+
+  const getList = async () => {
+    axios
+      .get(`http://192.168.201.74:3200/todo/${datax.id}`)
+      .then(({ data }) => {
+        console.log("data", data)
+        setData(data)
+      })
+      .catch((error) => console.error(error))
+  }
+
+  const getData = async () => {
     try {
-      
+      const username = await AsyncStorage.getItem('username')
+      const check = await axios.get(`http://192.168.201.74:3200/users/${username}`)
 
-
-
-
-
-  const navigation = useNavigation();
+      if (username !== null) {
+        console.log(check.data.id)
+        console.log(username)
+        setDatax({
+          id: check.data.id,
+          username: username
+        })
+      }
+    } catch (e) { }
+  }
+  
   return (
-    <ImageBackground source={require('../asset/addtask.jpg')} style={{width: '100%', height: '100%'}}>
-    <View style={(styles.container)}>
-      <Text style={styles.text}>Task</Text>
-      <View style={styles.container1}>
-        <Text style={styles.text1}>Task Name</Text>
-        <Text style={styles.text1}>Description</Text>
-        <TouchableOpacity onPress={() => navigation.navigate('Homepage')}
-        style={styles.button}>
-          <Text style={styles.textButton}>Back</Text>
-        </TouchableOpacity>
-      </View>
+    <View style={styles.container}>
+      <Text style={styles.title}>MY TODO LIST</Text>
+
+      <FlatList
+        data={data}
+        keyExtractor={(item) => item.userid}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={getList}
+          />
+        }
+        renderItem={({ item }) => {
+          return (
+            <TouchableOpacity
+              style={[styles.card, { flexDirection: 'row' }]}
+              onPress={async () => {
+                await AsyncStorage.setItem('title', item.title)
+
+                navigation.navigate('Edit')
+              }}
+              
+            >
+              
+              <View style={[{ justifyContent: 'center', marginLeft: 16 }]}>
+                <Text style={styles.titles}>{item.title}</Text>
+                <Text style={styles.descs}>{item.desc}</Text>
+                <Text style={styles.dates}>{item.date}</Text>
+              </View>
+              <View style={{ top: 28, right: 20, position: 'absolute' }}>
+                <Checkbox
+                  status={item.status ? 'checked' : 'unchecked'} color='green' size={20}
+                  value={item.status}
+                  onPress={async () => {
+                    if (item.status == 0) {
+                      await axios.put(`http://192.168.201.74:3200/todo/status/${item.id}`, { status: 1 })
+                    } else {
+                      await axios.put(`http://192.168.201.74:3200/todo/status/${item.id}`, { status: 0 })
+                    }
+                  }}
+                />
+              </View>
+              <TouchableOpacity
+                style={{ position: 'absolute', width: 100, height: 40, backgroundColor: 'red', right: 60, top: 30, justifyContent: 'center' }}
+                onPress={async () => {
+                  await axios.delete(`http://192.168.201.74:3200/todo/${item.id}`)
+                }}>
+                <Text style={[styles.hapus, { textAlign: 'center', color: '#fff' }]}>Hapus</Text>
+              </TouchableOpacity>
+            </TouchableOpacity>
+          )
+        }}
+      />
+
+      <TouchableOpacity
+        style={{ right: 30, bottom: 30, position: 'absolute' }}
+        onPress={() => navigation.navigate('Homepage')}
+      >
+        <Icon
+          name='plus-circle'
+          color='#fff'
+          size={70}
+        />
+      </TouchableOpacity>
     </View>
-    </ImageBackground>
   )
 }
 
 const styles = StyleSheet.create({
-   container: {
+  container: {
     flex: 1,
-    justifyContent: 'center',
+    backgroundColor: '#0faaf2',
+  },
+
+  center: {
     alignItems: 'center',
-  },
-  text: {
-    flex : 1,
-    top : 20,
-    color: '#706C61',
-    fontSize: 23,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  container1: {
-    width: '80%',
-  },
-  input: {
-    backgroundColor: '#1B2430',
-    borderRadius: 10,
-    height: 50,
-    width: '100%',
-    marginBottom: 20,
-  },
-  button: {
-    backgroundColor: '#1B2430',
-    borderRadius: 10,
-    height: 50,
-    bottom: '40%',
-    width: '100%',
     justifyContent: 'center',
-    alignItems: 'center',
   },
-  textButton: {
+
+  title: {
     color: '#fff',
     fontSize: 20,
     fontWeight: 'bold',
+    fontStyle: 'normal',
+    fontFamily: 'Roboto',
+    textAlign: 'center',
+    marginTop: 24,
+    marginBottom: 24,
   },
-  icon : {
-    flex : 1,
-    left: 20,
-    top: 20,
-    color : '#fff',
+
+  card: {
+    backgroundColor: '#fff',
+    width: 312,
+    height: 100,
+    marginLeft: 24,
+    marginBottom: 10,
   },
-  text1 : {
-    bottom : '100%',
-    color : '#33313B',
-    fontSize : 20,
-    fontWeight : 'bold',
-    marginBottom : 20,
+
+  titles: {
+    color: '#000',
+    fontSize: 20,
+    fontWeight: 'bold',
+    fontStyle: 'normal',
+    fontFamily: 'Roboto',
+    marginBottom: 6,
+  },
+
+  descs: {
+    color: '#000',
+    width: 200,
+    fontSize: 15,
+    fontWeight: '400',
+    fontStyle: 'normal',
+    fontFamily: 'Roboto',
+    marginBottom: 10
+  },
+
+  dates: {
+    color: '#000',
+    fontSize: 15,
+    fontWeight: '500',
+    fontStyle: 'normal',
+    fontFamily: 'Roboto',
+  },
+
+  hapus: {
+    fontSize: 16,
+    fontWeight: '400',
+    fontStyle: 'normal',
+    fontFamily: 'Roboto',
   }
 })
 
-export default Task
+export default Todo

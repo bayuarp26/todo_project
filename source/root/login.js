@@ -1,136 +1,142 @@
-
-import { 
-  View, 
-  Text, 
-  StyleSheet,
-  Image,
-  TextInput,
-  TouchableOpacity, 
-  ToastAndroid} from 'react-native'
+import { View, Text, StyleSheet, Image, TextInput, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
+// import Logo from '../assets/Logo.png'
 import { useNavigation } from '@react-navigation/native'
 import axios from 'axios'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-const login = () => {
+const App = () => {
   const navigation = useNavigation();
-  const [email, setEmail] = useState('toyo@email.com');
-  const [password, setPassword] = useState('12345');
+  const [username, setUsername] = useState('Chopper');
+  const [password, setPassword] = useState('123');
 
   const handleLogin = async (value) => {
-    console.log('value',value);
-
     try {
-      const res = await axios.post('http://172.20.10.2:3200/user/login',{
-        email: value.email,
-        password: value.password,
-        nama : value.nama,
-      });
-      if (res.data.status === 200) {
-        console.log('res', res.users)
-        navigation.navigate('Homepage');
-      await AsyncStorage.setItem('password', value.password);
-      await AsyncStorage.setItem('email', value.email);
-      await AsyncStorage.setItem('nama', res.data.users.nama);
+      const data = await axios.get('http://192.168.201.74:3200/users/' + username)
+      const response = await axios.post('http://192.168.201.74:3200/users/login', {
+        username: value.username,
+        password: value.password
+      })
+      if (response.data.status == 200) {
+        console.log('response', response.data)
+        navigation.navigate('Homepage')
+
+        await AsyncStorage.setItem('password', value.password)
+        await AsyncStorage.setItem('username', value.username)
+        await AsyncStorage.setItem('nama', data.data.nama)
       }
     } catch (error) {
-      console.log(error.message);
-      ToastAndroid.show('Login Failed', ToastAndroid.SHORT);
+      console.log(error.message)
     }
-  };
-
-  //data input style 
+  }
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>Login</Text>
-      <View style={styles.container1}>
+      {/* <Image source={Logo} style={styles.logo} /> */}
+      <Text
+        style={{
+          color: 'white',
+          fontSize: 30,
+          marginBottom: 20,
+          fontWeight: "bold",
+          top: -200,
+        }}>
+        Welcome Back!
+      </Text>
+      <Text
+        style={{
+          color: 'white',
+          fontSize: 20,
+          marginBottom: 20,
+          top: -200,
+        }}>
+        Let's help you meet your tasks
+      </Text>
+      <Text
+        style={{
+          color: 'white',
+          fontSize: 30,
+          marginBottom: 20,
+          fontWeight: "bold",
+        }}>
+        TODO LIST
+      </Text>
+      <View>
         <TextInput
           style={styles.input}
           placeholder="Username"
           placeholderTextColor="white"
-          onChangeText={(text) => setEmail(text)}
-          value={email}
+          onChangeText={(username) => setUsername(username)}
+          value={username}
         />
         <TextInput
           style={styles.input}
           placeholder="Password"
           placeholderTextColor="white"
-          onChangeText={(text) => setPassword(text)}
+          secureTextEntry={true}
+          onChangeText={(password) => setPassword(password)}
           value={password}
+
         />
-        <TouchableOpacity 
-        style={styles.button}
-        onPress={async () => {
-          await handleLogin({email, password});
-        }}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={async () => {
+            await handleLogin({ username, password });
+          }}>
           <Text style={styles.textButton}>Login</Text>
         </TouchableOpacity>
-        <Text style={styles.text2}>Don't have an account? 
-        <Text onPress={() => navigation.navigate('registerScreen')}
-        style ={styles.sign}> Sign Up</Text>
+        <Text style={styles.text}>Don't have an account?
+        
+          <Text
+            style={{ fontWeight: 'bold' }}
+            onPress={() => navigation.navigate('RegisterScreen')}
+          > Sign Up</Text>
         </Text>
       </View>
     </View>
-
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000',
+    backgroundColor: '#dd42f5',
     justifyContent: 'center',
     alignItems: 'center',
   },
-  text: {
-    color: '#fff',
-    fontSize: 30,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  container1: {
-    width: '80%',
+  logo: {
+    width: 155,
+    height: 170,
+    top: 85,
   },
   input: {
-    backgroundColor: '#1B2430',
-    width: '100%',
+    width: 300,
     height: 50,
-    borderRadius: 10,
-    marginBottom: 10,
-    paddingHorizontal: 15,
-    color: '#fff',
+    backgroundColor: '#ffff',
+    borderRadius: 25,
+    color: '#8142f5',
+    paddingHorizontal: 25,
+    marginBottom: 20,
   },
   button: {
-    backgroundColor: '#fff',
-    width: '100%',
+    width: 300,
     height: 50,
-    borderRadius: 10,
-    alignItems: 'center',
+    backgroundColor: '#8142f5',
+    borderRadius: 15,
     justifyContent: 'center',
-    marginBottom: 10,
+    alignItems: 'center',
   },
   textButton: {
-    color: '#000',
-    fontSize: 20,
-    fontWeight: 'bold',
+    color: '#ffff',
+    fontSize: 25,
+    fontWeight: "bold"
+    
   },
-  text2: {
-    color: '#fff',
-    fontSize: 15,
-    marginBottom: 10,
+  text: {
+    color: 'white',
+    marginTop: 20,
+    textAlign: 'center',
+    fontSize: 16,
   },
-  text3: {
-    color: '#fff',
-    fontSize: 15,
-  },
-  sign: { 
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: 'bold',
-    marginBottom: 10,
-  },
-
 })
 
-
-export default login
+export default App

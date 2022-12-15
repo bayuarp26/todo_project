@@ -16,11 +16,11 @@ show_all : async (req, res) => {
 
    show : async (req, res) => {
     const id=req.params.id
-    const { title, description, parameter, date} = req.body
+    const { email, nama, password } = req.body
     const user = await UserModel.findByPk(id)
 
     if (user){
-        const users = await user.update({title, description, parameter, date})
+        const users = await user.update({email, nama, password});
 
         return res.json({
             status: 200,

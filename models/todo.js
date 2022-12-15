@@ -1,42 +1,28 @@
-
 const { Model, DataTypes } = require('sequelize')
 const sequelize = require('../db.config')
 
 class Todo extends Model { }
 
-
 Todo.init({
-    id: {
-        type: DataTypes.INTEGER,
-        primaryKey: true,
-        autoIncrement: true
-    },
     title: {
         type: DataTypes.STRING,
-        allowNull: false
+        unique: true
     },
-    description: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    parameter: {
-        type: DataTypes.STRING,
-        allowNull: false
+    desc: {
+        type: DataTypes.STRING
     },
     date: {
-        type: DataTypes.DATEONLY,
-        allowNull: false
+        type: DataTypes.DATEONLY
     },
-    createdAt: {
-        type: DataTypes.DATE,
-        allowNull: false
+    status: {
+        type: DataTypes.BOOLEAN
     },
-    updatedAt: {
-        type: DataTypes.DATE,
-        allowNull: false
-    }
+    userid: {
+        type: DataTypes.INTEGER
+    },
 }, {
     sequelize,
-    modelName: 'Todo',
-});
+    modelName: 'Todo'
+})
+
 module.exports = Todo

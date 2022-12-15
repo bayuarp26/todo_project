@@ -1,205 +1,148 @@
-import React from 'react';
-import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
-import { createAppContainer } from 'react-navigation';
-import { Icon } from 'react-native-vector-icons';
-import { createStackNavigator } from 'react-navigation-stack';
+import { View, Text, TextInput, StyleSheet, TouchableOpacity, ToastAndroid } from 'react-native'
+import React, { useState, useEffect } from 'react'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import axios from 'axios';
 
+const Account = () => {
+    const [nip, setNip] = useState('')
+    const [nama, setNama] = useState('')
+    const [passwordLama, setPasswordLama] = useState('')
+    const [passwordBaru, setPasswordBaru] = useState('')
+    const [konfirmasiSandi, setKonfirmasiSandi] = useState("");
 
-  const Ynavigator = createStackNavigator({
-    myday: {
-      screen: myday,
-      navigationOptions: {
-        headerShown: false,
-      },
-    },
-    task: {
-      screen: task,
-      navigationOptions: {
-        headerShown: false,
-      },
-    },
-    addtask: {
-      screen: addtask,
-      navigationOptions: {
-        headerShown: false,
-      },
-    },
-    important: {
-      screen: important,
-      navigationOptions: {
-        headerShown: false,
-      },
-    },
-    completed: {
-      screen: completed,
-      navigationOptions: {
-        headerShown: false,
-      },
-    },
-    settings: {
-      screen: settings,
-      navigationOptions: {
-        headerShown: false,
-      },
-    },
-    about: {
-      screen: about,
-      navigationOptions: {
-        headerShown: false,
-      },
-    },
-  })
+    const [data, setData] = useState({
+        nip: '',
+        password: '',
+        name: ''
+    })
 
-  const myday = () => {
+    console.log('nip', data.nip)
+    console.log('password', data.password);
+    console.log('name', data.name);
+
+    useEffect(() => {
+        getData()
+        return () => { };
+    }, []);
+
+    const getData = async () => {
+        try {
+            let nip = await AsyncStorage.getItem('nip')
+            let password = await AsyncStorage.getItem('password')
+            let name = await AsyncStorage.getItem('name')
+            if (nip !== null) {
+                // value previously stored
+                setData({
+                    nip: nip,
+                    nama: name,
+                    password: password,
+                    name: name
+                })
+            }
+        } catch (e) {
+            // error reading value
+        }
+    }
+
+    const resetPassword = async (value) => {
+        console.log('value', value);
+        try {
+            const response = await axios.put('http://192.168.122.41:3200/users', {
+                nip: value.nip,
+                password: value.passwordLama,
+                passwordBaru: value.passwordBaru,
+            })
+            if (response.data.status == 200) {
+                console.log('response', response)
+                ToastAndroid.show("Password berhasil diubah", ToastAndroid.SHORT)
+            }
+        } catch (error) {
+            console.log(error.message)
+            ToastAndroid.show("Cek kembali nip dan password", ToastAndroid.SHORT)
+        }
+    }
+
     return (
-      <View style={styles.container}>
-        <Text style={styles.text}>My Day</Text>
-        <View style={styles.container1}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.textButton}>Add Task</Text>
-          </TouchableOpacity>
+        <View>
+            <Text>{data.nip}</Text>
+            <Text>{data.password}</Text>
+            <Text>{data.name}</Text>
+            <Text>NIP</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="NIP"
+                placeholderTextColor="white"
+                onChangeText={(nip) => setNip(nip)}
+                value={nip}
+            />
+            <Text>Password Lama</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Masukkan Password Lama"
+                placeholderTextColor="white"
+                // secureTextEntry={true}
+                onChangeText={(password) => setPasswordLama(password)}
+                value={passwordLama}
+            />
+            <Text>Password Baru</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Masukkan Password Baru"
+                placeholderTextColor="white"
+                // secureTextEntry={true}
+                onChangeText={(password) => setPasswordBaru(password)}
+                value={passwordBaru}
+            />
+            <Text>Konfirmasi Password</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Konfirmasi Password"
+                placeholderTextColor="white"
+                // secureTextEntry={true}
+                onChangeText={(password) => setKonfirmasiSandi(password)}
+                value={konfirmasiSandi}
+            />
+            <TouchableOpacity
+                style={styles.button}
+                onPress={async () => {
+                    if (nip == "" || passwordLama == "" || passwordBaru == "" || konfirmasiSandi == "") {
+                        ToastAndroid.show("Data tidak boleh kosong", ToastAndroid.SHORT);
+                    } else if (nip !== data.nip || passwordLama !== data.password) {
+                        ToastAndroid.show('NIP atau Password Salah', ToastAndroid.SHORT);
+                    } else if (passwordBaru !== konfirmasiSandi) {
+                        ToastAndroid.show('Password Baru dan Konfirmasi Password Tidak Sama', ToastAndroid.SHORT);
+                    } else {
+                        resetPassword({ nip: nip, nama: nama, passwordLama: passwordLama, passwordBaru: passwordBaru })
+                    }
+                }}>
+                <Text style={styles.textButton}>Reset Password</Text>
+            </TouchableOpacity>
         </View>
-      </View>
-    );
-  };
+    )
+}
 
-  const task = () => {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Task</Text>
-        <View style={styles.container1}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.textButton}>Add Task</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
-  const addtask = () => {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Add Task</Text>
-        <View style={styles.container1}>
-          <TextInput
-            style={styles.input}
-            placeholder="Task Name"
-            placeholderTextColor="white"
-          />
-          <TextInput
-            style={styles.input}
-            placeholder="Task Description"
-            placeholderTextColor="white"
-          />
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.textButton}>Add Task</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
-  const important = () => {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Important</Text>
-        <View style={styles.container1}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.textButton}>Add Task</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
-  const completed = () => {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Completed</Text>
-        <View style={styles.container1}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.textButton}>Add Task</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
-  const settings = () => {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>Settings</Text>
-        <View style={styles.container1}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.textButton}>Add Task</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
-  const about = () => {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.text}>About</Text>
-        <View style={styles.container1}>
-          <TouchableOpacity style={styles.button}>
-            <Text style={styles.textButton}>Add Task</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    );
-  };
-
-  const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#1E1E1E',
-      alignItems: 'center',
-      justifyContent: 'center',
+const styles = StyleSheet.create({
+    input: {
+        width: 300,
+        height: 50,
+        backgroundColor: '#333',
+        borderRadius: 10,
+        color: 'white',
+        paddingHorizontal: 20,
+        marginBottom: 20,
     },
-    container1: {
-      flex: 1,
-      backgroundColor: '#1E1E1E',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    text: {
-      color: 'white',
-      fontSize: 30,
-      fontWeight: 'bold',
+    button: {
+        width: 300,
+        height: 50,
+        backgroundColor: '#f2ed46',
+        borderRadius: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
     textButton: {
-      color: 'white',
-      fontSize: 20,
-      fontWeight: 'bold',
-    },  
-    button: {
-      backgroundColor: '#1E1E1E',
-      width: 200,
-      height: 50,
-      borderRadius: 10,
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderWidth: 1,
-      borderColor: 'white',
+        color: '#000',
+        fontSize: 20,
     },
-    input: {
-      backgroundColor: '#1E1E1E',
-      width: 300,
-      height: 50,
-      borderRadius: 10,
-      alignItems: 'center',
-      justifyContent: 'center',
-      borderWidth: 1,
-      borderColor: 'white',
-      color: 'white',
-      margin: 10,
-    },
-  });
+})
 
-
-  export default Ynavigator;
-
-
-
+export default Account
